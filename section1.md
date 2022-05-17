@@ -345,8 +345,79 @@ RUN/TAPデバイスを管理
 
 こっちはbrctlと違ってサブコマンドでなくオプションでオペレーションする
 
+# その他の仮想化ソリューション
+
+## OpenVZ
+
+コンテナ型仮想化
+
+OSテンプレートはEZテンプレートという
+
+```
+vzpkg install template
+```
+
+でテンプレートをインストール
+
+## OpenVZのユーティリティ
+
+vzctl
+
+サブコマンドのexec,exec2で任意のコマンドを実行
 
 
+## LXC
 
+コンテナ型
 
+Linuxのカーネル機能を使用して実現している
 
+高性能
+
+テンプレートを使用する
+
+```
+/usr/share/lxc/templates
+```
+
+に配置
+
+### lxcのユーティリティ
+
+* lxc-console
+* lxc-create
+* lxc-destroy
+* lxc-start
+* lxc-stop
+
+## その他の仮想化テクノロジ
+
+### Virtualbox
+
+Oracle
+
+マルチプラットフォーム
+
+CPUの仮想化支援機能対応
+
+パフォーマンス向上のためのデバイスドライバを提供
+
+VBoxManage(CUI),VirtualBoxManager(GUI)
+
+### Vagrant
+
+仮想マシン作成、管理ツール
+
+同一環境をかんたんに構築できる
+
+プロビジョング機能
+
+Vagrantfileに環境構築用の設定を記載する
+
+### Packer
+
+Vanrantで作成した仮想マシンイメージのパッケージやクラウド環境に対応したイメージを作成できる
+
+### Docker
+
+コンテナ型
