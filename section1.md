@@ -421,3 +421,132 @@ Vanrantで作成した仮想マシンイメージのパッケージやクラウ�
 ### Docker
 
 コンテナ型
+
+# Libvirtおよび関連ツール
+
+## libvirtとは？
+
+仮想環境を操作、管理するための共通のインタフェース
+
+特定の環境に依存しない
+
+## libvirtの基本アーキテクチャ
+
+libvirtdというデーモンが仮想環境を操作する
+
+設定ファイルは
+
+```
+/etc/libvirt/libvirtd.conf
+```
+
+### libvirtを使用した仮想マシンの作成
+
+ツール群は以下
+
+* virt-clone
+* virt-image
+* virt-install
+* virt-manager
+* virt-viewer
+
+### libvirtのネットワーキング
+
+起動時にデフォルトでdefaultとうNATブリッジが作成される
+
+### libvirtのストレージ管理
+
+Volume,Poolのいうコアコンセプトに基づいて設計されている
+
+ボリューム　ゲストに割り当てられる単一のストレージボリューム
+プール　ボリュームを保存する際に使用可能なホスト上のストレージ
+
+## virshによるlibvirtの操作
+
+virshはlibvirtが提供する標準のコマンドラインツール
+
+```
+virsh サブコマンド 引数
+```
+
+### コマンド例
+
+ゲストの一覧表示
+
+```
+virsh list --all
+```
+
+ゲストの起動
+
+```
+virsh start domain1
+```
+
+コンソール接続
+
+```
+virsh console domain1
+```
+
+ライブマイグレーション
+
+```
+virsh migrate --live guest1 qemu+ssh://ds/sys
+```
+
+仮想ネットワークの一覧表示
+
+```
+virsh net-list
+```
+
+デフォルトネットワークの起動
+
+```
+virsh net-start default
+```
+
+自動起動設定
+
+```
+virsh net-autostart default
+```
+
+設定変更
+
+```
+virsh net-edit mynetwork
+```
+
+仮想CPU情報
+
+```
+virsh vcpuinfo domain1
+```
+
+CPUアフィニティ(物理CPUと仮想CPUの割当)の設定
+
+
+仮想CPU1と物理CPU4の関連付け
+```
+virsh vcpupin domain 1 4
+```
+
+イメージファイルの一覧
+
+```
+virsh vol-list pool1
+```
+
+仮想マシンの復元
+
+```
+virsh restore vmfile
+```
+
+## oVirt
+
+KVMのハイパーバイザー上に構築された管理ツール
+
+webインターフェース
