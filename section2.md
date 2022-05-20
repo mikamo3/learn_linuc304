@@ -82,3 +82,321 @@ DSR ロードバランサを経由せずに直接レスポンスを返却
 
 RPO（Recovery Point Objective) 過去のどの地点まで復旧するのか
 RTO(Recovery Time Objective) いつまでに復旧すればよいか
+
+# ロードバランスクラスタ
+
+## LVSとは
+
+Linux Virtual Server オープンソースのロードバランサ
+
+定義された条件に基づいてクライアントからのリクエストを振り分け
+
+サービス提供するサーバをリアルサーバもしくはバックエンドサーバ、振り分けサーバを仮想サーバもしくはロードバランサという
+
+LVSはレイヤ４スイッチとも言う
+
+### IPVS
+
+IP Virtual Server,LVSの中心的なコンポーネント
+
+ip_vsとして実装提供されている、カーネルレベルの実装
+
+lvsdがメインデーモン
+
+子プロセスはnanny
+
+nannyがそれぞれのサービスに1対1で対応
+
+サービスの監視デーモンとして動作
+
+またLVSを動かすサーバも冗長化してスタンバイとハートビート通信をする
+
+### LVSフォワーディング
+
+ロードバランサが受け取ったパケットをリアルサーバに転送すること
+
+以下の方式がある
+
+* NAT 特別な設定不要・変換の負荷がボトルネックになる可能性あり
+* ダイレクトルーティング MACアドレスのみ変換。NATより高パフォーマンス。要設定。ロードバランサとリアルサーバを同一ネットワークに置く必要あり
+* トンネリング リアルサーバあてのIPヘッダでカプセル化して転送。挙動はダイレクトルーティングに似ている。リアルサーバを別ネットワークに設定可能
+* ローカルノード ロードバランサでリアルサーバの処理を兼用
+
+LVSを利用するためにIPフォワーデングの設定を以下のように行う
+
+```
+echo "1" > /proc/sys/net/ipv4/ip_forward 
+```
+
+### 接続スケジューリングアルゴリズム
+
+振り分け方法のアルゴリズム
+
+ラウンドロビン、主見つけラウンドロビンなど
+
+### ipvsadm
+
+LVS(IPVS)の管理ユーティリティ
+
+```
+ipvsadm サブコマンド オプション
+```
+
+例：192.168.0.15のリアルサーバに192.168.0.10の仮想サーバを追加し、フォワーディングにダイレクトルーティングを指定。重みを50に設定
+
+```
+ipvsadm -a -t 192.168.0.10:80 -r 192.168.0.15 -g -w 50
+```
+
+### keepalived
+
+リアルサーバの稼働状況を監視、ロードバランサ自体の冗長化をサポート
+
+設定ファイルは
+
+```
+/etc/keepalived/keepalived.conf
+```
+
+死活チェックにおいてHTTP_GETを使う場合帰ってくるべきデータのハッシュ値を予め設定ファイルに設定しておく
+
+```
+genhash -s サーバアドレス -p ポート番号 -u リクエストURL
+```
+で確認
+
+接続スケジューリングアルゴリズムは```lb_algo```の項目で設定する
+
+稼働しているリアルタイムサーバがない場合```sorry_server```リダイレクトされる
+
+### VRRP
+
+Virtual Router Redundancy Procotol
+
+keepalivedにおいてロードバランサの冗長化を行うために使用。
+
+認証方式としてパスワード認証、IPSecAHをサポート
+
+### ldirectord
+
+Linux Director Daemon
+
+LVSクラスタにおいてHeartbeatと連携して動作する負荷分散システムの監視、管理ツール
+
+ipvsadmより複雑な構成を管理するとき容易
+
+設定ファイルは
+
+```
+/etc/ha.d/ldirectord.cf
+```
+
+### HAProxy
+
+TCP,HTTPリバースプロキシ、SSLターミネータなどの機能を提供する
+
+レイヤ7で動作するロードバランサでルーティングポリシーやACLに基づいた振り分けが可能
+
+パフォーマンスの点でボトルネックになりやすい
+
+L4モードも用意されている
+
+### 振り分けアルゴリズム
+
+ラウンドロビン、ソース、URLなど
+
+### 設定ファイル
+
+```
+/etc/haproxy/haproxy.cfg
+```
+
+例：
+クライアントの送信元IPアドレスを特定するために```X-Forwarded-For```を付加するには
+
+```
+option forwardfor
+```
+を記載
+
+### ACL
+
+設定ファイルに
+
+```
+acl ルール名 クライテリオン フラグ オペレータ 値...
+```
+
+を記載
+
+例
+
+```
+frontend http-in
+  acl src_ip src 0.0.0.0/7 224.0.0.0/3
+  acl src_ip_port src_port 0:1023
+  acl local_dst hdr(host) -i localhost
+```
+
+# フェイルオーバークラスター
+
+## Pacemakerとは
+
+フェイルオーバーのリソースマネージャー
+
+### OpenAIS
+
+高可用ソフト仕様のAISのオープンソース実装
+
+Pacemaker,OpenAISともにリソースマネージャ
+
+クラスタエンジンは別途Heartbeat3,Corosyncなどつかう。
+
+### Pacemakerのアーキテクチャ
+
+いくつかの主要コンポーネントと連携して構成されている。
+
+* CIB Cluster Information Base リソース監視
+* CRMd Cluster Resource Management Daemonクラスタのリソース監視
+* PEngine Polucy Engine CIBの情報に基づき、最適化
+* LRMd Local Resource Management Daemon
+* STONITHd フェンシング機能を提供するデーモン
+
+### cib.xml
+
+```
+/var/lib/pacemaker/cib
+```
+
+にpacemaker起動時に自動作成される
+
+ノード間で自動的に同期される
+
+### リソースとリソースエージェント
+
+監視や制御の対象となるサービス、およびその構成要素
+
+リソースの対象となるのはアプリケーションだけでなくクラスタ上で可用性を保証する必要のある様々なもの（仮想IPやファイルシステムなど）
+
+監視,操作するプログラムをリソースエージェント（RA）という
+
+## リソースクラス
+
+RAを記述するための仕様はリソースクラスという
+
+### Pacemakerの管理とユーティリティ
+
+crm_で始まるコマンド群
+
+統一性がないので```cibadmin``````crm``````pcs```を変わりに使用する
+
+### cibadmin
+
+cib.xmlを編集する
+
+```
+cibadmin サブコマンド オプション 引数
+```
+
+例：　ローカルノードの設定内容をすべて表示
+
+```
+cibadmin -Q --local
+```
+
+oldという名前のリソースを削除
+
+```
+cibadmin -D -X '<primirive id="old"/>'
+```
+
+### crmコマンドとcrmshシェル
+
+cibadminのラッパー
+
+```
+crm オプション サブコマンド
+```
+
+例：　クラスタに新しいノードn1を追加
+
+```
+crm cluster add n1
+```
+
+crmshは対話型
+
+### pcsコマンド
+
+Pacemaker/Corosync Configuration System
+
+pcs -f ファイル名 サブコマンド
+
+## リソースの制約
+
+以下の制約が可能
+
+-INFINITY < 負の値 < 0 < 正の値 < INFINITY
+
+-INFINITY 禁止
+INFINITY 強制
+### location制約
+
+リソースをどの場所で実行するか
+
+```
+pcs constraint location リソース アクション ノード=スコア値
+```
+
+### order制約
+
+リソースを実行する順番
+
+```
+pcs constraint order A then B
+```
+
+### colocation制約
+
+同一リソース上で一緒に実行すべきリソース
+
+```
+pcs constraint colocation add A with B
+```
+
+### STONITH
+
+Shoot The Other Node In The Head
+
+フェンシング機能を提供する。
+
+対応デバイスが必要（電源OFFのため）
+
+* UPS
+* PDU(Power Distribution Unit)
+* Blade power control devices
+* IMI devices
+
+APC提供のPDUデバイスの操作にfence_apcコマンドが使われる
+
+### Corosyncの設定と管理
+
+```
+/etc/corosync/corosync.conf
+```
+
+が設定ファイル
+
+### corosyncの主なコマンド
+
+### corosync認証鍵ファイルの設定
+
+認証鍵authkeyを作成してPacemakerと連携する
+
+```
+corosync-keygen
+```
+
+コマンドを使って作成
+
+作成した鍵はすべてのノードにコピーする
