@@ -400,3 +400,50 @@ corosync-keygen
 コマンドを使って作成
 
 作成した鍵はすべてのノードにコピーする
+
+# エンタープライズLinuxディストリビューションの高可用性
+
+## RHELの高可用性アドオン
+
+High Availability Add-Onというソフトウェアコンポーネント群を提供している
+
+クラスタインフラストラクチャ
+
+* CMAN (Cluster Manager)
+* DLM (Distributed Lock Manager)
+* フェンシング機能
+
+高可用性サービス管理
+
+* RGManager(Resource Group Manager)
+
+クラスタ管理ツール
+
+* Conga(管理用UI)
+* Luci(Congaを提供するアプリケーションサーバ)
+* Ricci(管理用サービスデーモン)
+
+## SUSE Linux エンタープライズの高可用性拡張
+
+クラスタ
+
+* Pacemaker
+* Corosync,AoenAIS
+* Geo Clustering
+* HAProxy
+
+クラスタファイルシステムとボリューム管理
+
+* OCFS2,GFS2
+* cLVM2
+
+データレプリケーション
+
+* DRBD
+* Relax-and-Recover
+
+管理ツール
+
+* 統合コマンドラインインターフェース
+* Hawk(Web UI)
+
