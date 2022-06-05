@@ -124,9 +124,106 @@ info サブコマンドで情報取得
 
 info cpus sをつける
 
+change メディア入れ替え xlと違ってcd-はつけない
 
 スナップショット関係のコマンド
 
 * savevm
 * loadvm
 * delvm
+
+# その他の仮想化ソリューション
+
+## LXCの非特権、特権コンテナ
+
+特権コンテナはコンテナrootプロセスはホストでもroot
+
+セキュリティを担保するには強制アクセス制御、ケーパビリティの削除を行う
+
+## vzctlコマンドの主なサブコマンド
+
+* suspend 一時停止
+* set 各種設定
+* enter コンテナに入る
+* console コンテナのコンソールに接続
+* status コンテナの情報表示
+* destroy | delete コンテナ破棄
+
+## vagrantコマンドの主なサブコマンド
+
+* box イメージ管理
+* destroy 仮想マシン停止、関連リソース削除
+* suspend 仮想マシンの状態保存
+
+## LXCの主なコマンド
+
+* lxc-destroy コンテナ削除
+* lxc-start 起動
+* lxc-info 情報表示
+* lxc-ls 一覧
+
+情報表示はinfo,vzctlはstatusなので混同しないようにする
+
+# Libvirtと管理ツール
+
+## dominfoで得られる情報
+
+* 使用メモリ
+* 割当メモリ
+* 割当CPU数
+* CPU時間
+
+空きメモリ、CPU使用率は表示されない
+
+## virshの主なサブコマンド
+
+* destroy 強制終了
+* net-destroy ネットワーク強制停止
+* change-media 仮想CD変更
+* suspend 一時停止
+* resume 再開
+* dominfo ドメイン情報を表示
+* setmem メモリサイズ指定
+* vcpuinfo cp情報を表示
+* vcpupin 仮想CPUアフィニティの制御
+
+仮想CPU関連はvcpu*
+suspend,resumeはxlのpause,unpauseと混同しないこと
+## libvirtツール
+
+* virt-viewer ゲストOSGUI表示
+
+viewではない
+
+## virt-managerでの仮想マシン作成時の注意
+
+メモリ、CPUは仮想マシン作成時に決定する必要がある
+
+# クラウド管理ツール
+
+* CloudStack マネジメントサーバと管理されるリソースで構成される
+* OpenStack NASAが開発。ストレージサービス AWSEC2,S3互換性を念頭に開発されている
+* Eucalyptus カリフォルニア大学開発、AWS同等環境
+* OpenNebula 仮想データセンター向け
+
+## CloudStackのコンポーネント
+
+* マネージドサーバ
+* データベースサーバ 状態保存用
+* コンピューティングノード
+  * Region
+  * Zone
+  * Pod
+  * Cluster
+* プライマリストレージ
+* セカンダリストレージ テンプレート、イメージ、スナップショット保存先
+
+## OpenStackのコンポーネント
+
+* Nova 仮想マシン管理
+* Cinder ブロックストレージ管理
+* Swift オブジェクトストレージ管理
+* Neutron 仮想ネットワーク管理
+* Glance 仮想マシンイメージ管理
+* Keystone 認証基盤
+* Horizon WebGUI
