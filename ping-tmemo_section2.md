@@ -137,6 +137,7 @@ Corosync,Heartbeat,OpenAIS(前身は)がメッセージ通信レイヤ機能を�
 * LRMd(Local Resource Management Daemon) 自ノードの管理、リリースエージェント(RA)を直接操作
 * STONITHd(ShootTheOtherNodeInTheHead) ノード異常時に電源制御を行う
 
+他のノードとやり取りするのはCRMd
 
 ### Pacemakerで扱えるリソース
 
