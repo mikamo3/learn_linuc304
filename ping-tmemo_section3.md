@@ -83,7 +83,7 @@ Attr
 * OCFS2 OracleClusterFileSystem
 * GlusterFS FUSE実装
 * CephFS RADOSという分散オブジェクトストアがある
-* AFS カーネギーメロン大学産、セキュリティ、キャッシュ機能に特徴がある
+* AFS カーネギーメロン大学産、セキュリティ、キャッシュ機能に特徴がある 改良版にCoda,Arla
 ## OCFS2
 
 フロントエンドツール

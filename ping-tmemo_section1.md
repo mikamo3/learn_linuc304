@@ -56,14 +56,19 @@ vcpu-xxxxはsはいらない
 * cd-eject
 * cd-insert
 
+マシン起動はcreate,openなどはない。-cで起動後にコンソール接続
+
 ## xl.cfg
 
 主な設定項目
 
 kernelでカーネルイメージを指定
 
+vifでネットワークの設定
+
 vcpusでCPU数、xlのコマンドvcpu-setと混同しないように
 
+builderオプションを指定しないと準仮想化になる
 ## 仮想化に対応しているかの確認方法
 
 xl dmesgにおいてHVMという単語が確認できるのでそれで確認(intel,amdともに)
@@ -93,6 +98,8 @@ CPU_Flagと混同しないように
 
 ## qemu-kvmのオプション
 
+デフォルトでは、-net tap,-net userが指定される
+
 -のみ
 
 メモリの指定は-m
@@ -105,6 +112,14 @@ CPU_Flagと混同しないように
 
 CDROMを入れて起動する場合は-cdrom
 
+-net nicでVLANに接続
+## qemu-imgのオプション
+
+* create
+* convert
+* resize
+* info
+* snapshot
 ### デフォルト値
 
 -net nic
@@ -149,6 +164,7 @@ change メディア入れ替え xlと違ってcd-はつけない
 * status コンテナの情報表示
 * destroy | delete コンテナ破棄
 
+情報表示はstatus,infoなどではない
 ## vagrantコマンドの主なサブコマンド
 
 * box イメージ管理
@@ -186,6 +202,7 @@ change メディア入れ替え xlと違ってcd-はつけない
 * setmem メモリサイズ指定
 * vcpuinfo cp情報を表示
 * vcpupin 仮想CPUアフィニティの制御
+* setvcpus 仮想マシンのCPU数を設定
 
 仮想CPU関連はvcpu*
 suspend,resumeはxlのpause,unpauseと混同しないこと

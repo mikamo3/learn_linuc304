@@ -73,6 +73,12 @@ ipvsadm サブコマンド パラメータ
 
 ## keepalibed
 
+
+リアルサーバの死活監視を行う
+
+LVSでは複雑な死活監視をできないのでそれを補完する
+
+VRRPで冗長化できる
 ### 設定項目
 
 /etc/keepalived/keepalived.conf
@@ -110,7 +116,7 @@ ipvsadm サブコマンド パラメータ
   * backend
     * server バックエンドサーバの設定
     * balance ロードバランスアルゴリズムの設定
-  * listen
+  * listen フロント、バック両方の設定を行える
 
 ## ldirectord
 
@@ -138,6 +144,8 @@ Corosync,Heartbeat,OpenAIS(前身は)がメッセージ通信レイヤ機能を�
 * STONITHd(ShootTheOtherNodeInTheHead) ノード異常時に電源制御を行う
 
 他のノードとやり取りするのはCRMd
+
+クラスタ構成と現在の情報を記録しているのはCIB
 
 ### Pacemakerで扱えるリソース
 
@@ -173,11 +181,11 @@ cib.xmlを表示、変更するコマンド
 * cib.xml
   * crm
     * configuration
-    * crm_config
-    * nodes
-    * resources
-    * constraints
-  * status
+      * crm_config
+      * nodes
+      * resources
+      * constraints
+    * status
 
 ### crm-cliコマンド
 
@@ -193,6 +201,7 @@ crm サブコマンド
 * resource リソース定義はconfigureで行う
 * status
 
+crm,crmshは対話型で起動できる
 ### crm configureで設定できる制約
 
 crm configure 制約 制約名 スコア値: リソースA リソースB
@@ -215,6 +224,11 @@ pcs サブコマンド
 * status
 * stonith
 
+制約を追加するとき
+
+crm configure ...
+
+pcs consraint ...
 ### pcs propertyの主なプロパティ
 
 * no-quorum-policy quorumを持たないときの動作
