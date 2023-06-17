@@ -12,8 +12,7 @@ Distributed Replicated Block Device 分散複製ブロックデバイス
 
 /proc/drbd でステータスが見られる
 
-/etc/debd.conf
-
+/etc/debd.conf、サブディレクトリなし
 TCP/IPを使用
 
 ### クラスタ構成
@@ -79,7 +78,7 @@ Attr
 
 ## 一覧
 
-* GFS2 RedHatGlobalFileSystem
+* GFS2 RedHatGlobalFileSystem それぞれのノードが個別のジャーナルを持つ
 * OCFS2 OracleClusterFileSystem
 * GlusterFS FUSE実装
 * CephFS RADOSという分散オブジェクトストアがある

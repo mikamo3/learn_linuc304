@@ -32,6 +32,8 @@ ldirectord クラスタソフトウェアHeartbeatの一部、死活監視、レ
 ## LVS
 クラスタシステム。IPVS(Ip Virtual Server)というロードバランシング機能を持ったカーネルモジュールを使用して負荷分散する
 
+死活監視やロードバランサの冗長性は別のものを使う
+
 ## IPVS
 
 負荷分散を行う
@@ -118,6 +120,8 @@ VRRPで冗長化できる
     * balance ロードバランスアルゴリズムの設定
   * listen フロント、バック両方の設定を行える
 
+proxy内にlistenがあり、frontend,backend両方の設定が可能
+
 ## ldirectord
 
 ### 設定項目
@@ -146,6 +150,8 @@ Corosync,Heartbeat,OpenAIS(前身は)がメッセージ通信レイヤ機能を�
 他のノードとやり取りするのはCRMd
 
 クラスタ構成と現在の情報を記録しているのはCIB
+
+RAはコンポーネントに含まれない。LRMdによって操作される
 
 ### Pacemakerで扱えるリソース
 

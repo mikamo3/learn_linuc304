@@ -64,7 +64,7 @@ vcpu-xxxxはsはいらない
 
 kernelでカーネルイメージを指定
 
-vifでネットワークの設定
+vifでネットワークの設定ifではない
 
 vcpusでCPU数、xlのコマンドvcpu-setと混同しないように
 
@@ -102,7 +102,7 @@ CPU_Flagと混同しないように
 
 -のみ
 
-メモリの指定は-m
+メモリの指定は-m -memoryではない
 
 カーネルイメージの指定は-kernel
 
@@ -165,6 +165,8 @@ change メディア入れ替え xlと違ってcd-はつけない
 * destroy | delete コンテナ破棄
 
 情報表示はstatus,infoなどではない
+
+コンテナ削除にrmはない
 ## vagrantコマンドの主なサブコマンド
 
 * box イメージ管理
